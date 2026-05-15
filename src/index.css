@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background-color: #07070F;
+  color: #F1F0FF;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.glass {
+  background: rgba(15, 15, 26, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 16px;
+}
+
+.glow-purple { box-shadow: 0 0 20px rgba(124, 58, 237, 0.3), inset 0 0 20px rgba(124, 58, 237, 0.05); }
+.glow-cyan { box-shadow: 0 0 20px rgba(6, 182, 212, 0.3), inset 0 0 20px rgba(6, 182, 212, 0.05); }
+
+.gradient-text {
+  background: linear-gradient(135deg, #7C3AED, #06B6D4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-border {
+  position: relative;
+  border-radius: 16px;
+  background: linear-gradient(#07070F, #07070F) padding-box,
+              linear-gradient(135deg, #7C3AED, #06B6D4) border-box;
+  border: 1px solid transparent;
+  animation: borderRotate 4s linear infinite;
+}
+
+@keyframes borderRotate {
+  0% { background: linear-gradient(#07070F, #07070F) padding-box, linear-gradient(135deg, #7C3AED, #06B6D4) border-box; }
+  50% { background: linear-gradient(#07070F, #07070F) padding-box, linear-gradient(315deg, #7C3AED, #06B6D4) border-box; }
+  100% { background: linear-gradient(#07070F, #07070F) padding-box, linear-gradient(135deg, #7C3AED, #06B6D4) border-box; }
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  background: #7C3AED;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.3);
+  border-radius: 10px;
+}
+
+.radar-grid { stroke: rgba(124, 58, 237, 0.15); stroke-width: 1; fill: none; }
+.radar-poly { fill: rgba(124, 58, 237, 0.2); stroke: #7C3AED; stroke-width: 2; }
+.radar-poly-ghost { fill: rgba(6, 182, 212, 0.1); stroke: #06B6D4; stroke-width: 1; stroke-dasharray: 4; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+  50% { transform: translateY(-20px) rotate(180deg); opacity: 0.6; }
+}
+
+@keyframes typingDot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
