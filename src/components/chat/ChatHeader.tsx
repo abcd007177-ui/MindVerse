@@ -1,14 +1,21 @@
 import React from 'react';
-import { Video, Phone, MoreVertical, Search, PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { Video, Phone, MoreVertical, Search, PanelRightClose, PanelRightOpen, Users } from 'lucide-react';
 import { useChatContext } from '../../hooks/useChat';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
 export const ChatHeader = () => {
   const { state, dispatch } = useChatContext();
-  const conv = state.conversations.find(c => c.id === state.activeConversation);
+  
+  const isGroup = state.activeConversation?.startsWith('g');
+  const conv = isGroup 
+    ? state.groups.find(g => g.id === state.activeConversation)
+    : state.conversations.find(c => c.id === state.activeConversation);
 
   if (!conv) return null;
+
+  const messages = state.messages[state.activeConversation || ''] || [];
+  const showBanner = state.isTyping && messages.length === 0 && !isGroup;
 
   return (
     <>
@@ -20,26 +27,40 @@ export const ChatHeader = () => {
                 {conv.emoji}
               </div>
             </div>
-            {conv.isOnline && (
+            {!isGroup && conv.isOnline && (
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#10B981] rounded-full border-[3px] border-[#07070F] animate-pulse"></div>
+            )}
+            {isGroup && (
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#7C3AED] rounded-full border-[2px] border-[#07070F] flex items-center justify-center">
+                 <Users className="w-3 h-3 text-white" />
+              </div>
             )}
           </div>
           
           <div className="flex flex-col">
             <h2 className="text-lg font-bold gradient-text">
-              {conv.characterName}
+              {isGroup ? conv.name : conv.characterName}
             </h2>
             <div className="flex items-center gap-2 mt-1">
               <span className="px-2 py-0.5 rounded-full bg-[#7C3AED]/15 text-[#A78BFA] text-[10px] font-medium tracking-wide">
-                {conv.tagline}
+                {isGroup ? conv.theme : conv.tagline}
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-[#06B6D4]/10 text-[#67E8F9] text-[10px] font-medium tracking-wide">
-                {conv.tags[0]}
-              </span>
-              <div className="flex items-center gap-1 ml-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></div>
-                <span className="text-[10px] text-[#9CA3AF] font-medium">Online</span>
-              </div>
+              {!isGroup && conv.tags && (
+                 <span className="px-2 py-0.5 rounded-full bg-[#06B6D4]/10 text-[#67E8F9] text-[10px] font-medium tracking-wide">
+                   {conv.tags[0]}
+                 </span>
+              )}
+              {isGroup && (
+                 <span className="text-[10px] text-[#9CA3AF] font-medium ml-1">
+                   {conv.members.length} members
+                 </span>
+              )}
+              {!isGroup && (
+                 <div className="flex items-center gap-1 ml-1">
+                   <div className={cn("w-1.5 h-1.5 rounded-full", conv.isOnline ? "bg-[#10B981]" : "bg-gray-500")}></div>
+                   <span className="text-[10px] text-[#9CA3AF] font-medium">{conv.isOnline ? "Online" : "Offline"}</span>
+                 </div>
+              )}
             </div>
           </div>
         </div>
@@ -62,7 +83,7 @@ export const ChatHeader = () => {
 
       {/* Analyzing Banner */}
       <AnimatePresence>
-        {state.activeConversation === 'loading-new-chat' && (
+        {showBanner && (
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -75,7 +96,7 @@ export const ChatHeader = () => {
               <motion.div 
                 initial={{ width: '0%' }}
                 animate={{ width: '100%' }}
-                transition={{ duration: 2, ease: "linear" }}
+                transition={{ duration: 1.5, ease: "linear" }}
                 className="h-full bg-gradient-to-r from-[#7C3AED] to-[#06B6D4]"
               />
             </div>

@@ -3,10 +3,17 @@ import { useChatContext } from '../../hooks/useChat';
 import { ChatHeader } from '../chat/ChatHeader';
 import { ChatInput } from '../chat/ChatInput';
 import { MessageBubble } from '../chat/MessageBubble';
+import { getApiKey } from '../../lib/geminiChat';
+import { KeyRound } from 'lucide-react';
 
 export const ChatArea = () => {
   const { state } = useChatContext();
-  const conv = state.conversations.find(c => c.id === state.activeConversation);
+  
+  const isGroup = state.activeConversation?.startsWith('g');
+  const conv = isGroup 
+    ? state.groups.find(g => g.id === state.activeConversation)
+    : state.conversations.find(c => c.id === state.activeConversation);
+    
   const messages = state.messages[state.activeConversation || ''] || [];
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -26,6 +33,15 @@ export const ChatArea = () => {
       </div>
     );
   }
+
+  // Get avatar for a given author name in a group
+  const getAvatar = (name: string) => {
+    if (!isGroup) return conv.emoji;
+    const profile = state.conversations.find(c => c.characterName.toLowerCase() === name?.toLowerCase());
+    return profile?.emoji || '👤';
+  };
+  
+  const hasApiKey = !!getApiKey();
 
   return (
     <div className="flex-1 flex flex-col h-full bg-transparent relative w-full">
@@ -56,12 +72,31 @@ export const ChatArea = () => {
             key={msg.id} 
             message={msg} 
             isAI={msg.role === 'ai'} 
-            avatar={msg.role === 'ai' ? conv.emoji : undefined}
+            avatar={msg.role === 'ai' ? getAvatar(msg.name) : undefined}
+            name={isGroup && msg.role === 'ai' ? msg.name : undefined}
           />
         ))}
         {state.isTyping && (
-          <MessageBubble isAI={true} isTyping={true} avatar={conv.emoji} />
+          <MessageBubble 
+             isAI={true} 
+             isTyping={true} 
+             name={isGroup ? state.typingName : undefined} 
+             avatar={getAvatar(state.typingName || '')} 
+          />
         )}
+        
+        {!hasApiKey && (
+           <div className="w-full max-w-md mx-auto my-8 glass rounded-2xl p-6 flex flex-col items-center text-center border-red-500/30">
+              <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+                 <KeyRound className="w-6 h-6 text-red-400" />
+              </div>
+              <h3 className="text-white font-medium mb-2">API Key Required</h3>
+              <p className="text-sm text-[#9CA3AF]">
+                 Add your Gemini API key to .env as <code className="bg-black/30 px-1.5 py-0.5 rounded text-[#7C3AED]">VITE_GEMINI_API_KEY</code> to activate AI.
+              </p>
+           </div>
+        )}
+        
         <div ref={messagesEndRef} className="h-4 w-full flex-shrink-0" />
       </div>
 

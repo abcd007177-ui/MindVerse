@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Brain, Edit, Plus, Settings } from 'lucide-react';
 import { useChatContext } from '../../hooks/useChat';
 import { SidebarSearch } from '../sidebar/SidebarSearch';
@@ -9,6 +9,7 @@ import { motion } from 'motion/react';
 
 export const LeftSidebar = () => {
   const { state, dispatch } = useChatContext();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const chips = [
     { label: 'Recent', icon: '⚡' },
@@ -16,6 +17,15 @@ export const LeftSidebar = () => {
     { label: 'Future Self', icon: '🔮', action: () => dispatch({ type: 'SET_PAGE', payload: 'futureSelf' }) },
     { label: 'Saved', icon: '⭐' }
   ];
+
+  const filteredConversations = state.conversations.filter(c => 
+    c.characterName?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    c.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+  const filteredGroups = state.groups.filter(g => 
+    g.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="w-[280px] h-full flex flex-col bg-[#07070F]/95 border-r border-[#7C3AED]/15 flex-shrink-0 z-10">
@@ -38,7 +48,7 @@ export const LeftSidebar = () => {
         </button>
       </div>
 
-      <SidebarSearch />
+      <SidebarSearch value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
 
       {/* Chips */}
       <div className="flex overflow-x-auto px-3 pb-2 gap-2 custom-scrollbar">
@@ -69,7 +79,7 @@ export const LeftSidebar = () => {
             ACTIVE MINDS
           </div>
           <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{staggerChildren: 0.05}}>
-            {state.conversations.map(conv => (
+            {filteredConversations.map(conv => (
               <ConversationItem key={conv.id} data={conv} />
             ))}
           </motion.div>
@@ -89,7 +99,7 @@ export const LeftSidebar = () => {
             </button>
           </div>
           <div>
-            {state.groups.map(group => (
+            {filteredGroups.map(group => (
               <GroupItem key={group.id} data={group} />
             ))}
           </div>

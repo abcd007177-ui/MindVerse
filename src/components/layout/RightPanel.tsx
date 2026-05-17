@@ -10,6 +10,8 @@ export const RightPanel = () => {
   const conv = state.conversations.find(c => c.id === state.activeConversation);
 
   if (!conv) return null;
+  
+  const mindsToDisplay = conv.similar_minds?.length > 0 ? conv.similar_minds : similarMinds;
 
   return (
     <div className="w-[320px] h-full bg-[#07070F]/95 border-l border-[#7C3AED]/10 overflow-y-auto custom-scrollbar pt-6 pb-20 px-4 z-20">
@@ -69,8 +71,8 @@ export const RightPanel = () => {
           SIMILAR MINDS
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
-          {similarMinds.map(mind => (
-            <button key={mind.id} className="min-w-[80px] glass p-2 flex flex-col items-center hover:border-[#7C3AED]/50 hover:bg-white/5 transition-all">
+          {mindsToDisplay.map((mind: any, index: number) => (
+            <button key={mind.id || index} className="min-w-[80px] w-[80px] glass p-2 flex flex-col items-center hover:border-[#7C3AED]/50 hover:bg-white/5 transition-all flex-shrink-0">
               <span className="text-2xl mb-1">{mind.emoji}</span>
               <span className="text-[10px] font-semibold text-[#E5E7EB] truncate w-full text-center">{mind.name}</span>
               <span className="text-[8px] text-[#9CA3AF] mt-0.5">{mind.tag}</span>

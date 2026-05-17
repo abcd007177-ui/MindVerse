@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '../../lib/utils';
 import { motion } from 'motion/react';
 
-export const MessageBubble = ({ message, isAI, isTyping = false, avatar }: { message?: any, isAI: boolean, isTyping?: boolean, avatar?: string }) => {
+export const MessageBubble = ({ message, isAI, isTyping = false, avatar, name }: { message?: any, isAI: boolean, isTyping?: boolean, avatar?: string, name?: string }) => {
   return (
     <motion.div
       initial={isAI ? "aiInitial" : "userInitial"}
@@ -28,8 +28,9 @@ export const MessageBubble = ({ message, isAI, isTyping = false, avatar }: { mes
               ? "glass p-4 rounded-2xl rounded-tl-[4px] border-[#7C3AED]/20 text-[#E5E7EB]" 
               : "bg-gradient-to-br from-[#7C3AED]/80 to-[#06B6D4]/60 p-4 rounded-2xl rounded-tr-[4px] shadow-lg text-white"
           )}>
+            {name && isAI && <div className="text-[10px] text-[#A78BFA] font-bold mb-1 opacity-80 uppercase tracking-widest">{name}</div>}
             {isTyping ? (
-              <div className="flex gap-1">
+              <div className="flex gap-1 items-center h-5">
                 <div className="typing-dot" style={{ animation: "typingDot 1s infinite" }}></div>
                 <div className="typing-dot" style={{ animation: "typingDot 1s infinite 0.2s" }}></div>
                 <div className="typing-dot" style={{ animation: "typingDot 1s infinite 0.4s" }}></div>
